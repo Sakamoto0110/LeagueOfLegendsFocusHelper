@@ -74,9 +74,11 @@ namespace LeagueOfLegendsFocusHelper
             TimeTextBox.TextChanged += TimeResultTextbox_OnTextChanged;
             MPlayer.MediaEnded += (sender, args) => MPlayer.Close();
             Options.OnOptionsChanged += (s, e) => MainWindowEventRouter(s, new((string)((OptionsList)s).Tag));
+            
             NIcon = MakeNotifyIcon();
             RefreshSoundList();
             Options.RaiseUpdate();
+            
         }
 
         private void PreLoad()
@@ -94,9 +96,12 @@ namespace LeagueOfLegendsFocusHelper
                 SoundList.Add(file.Replace(SoundsPath, string.Empty));
 
             SoundList.Add("Refresh");
+
+            UpdateSoundListButton();
+
             SoundListComboBox.ItemsSource = null;
             SoundListComboBox.ItemsSource = SoundList;
-            SoundListComboBox.SelectedIndex = SoundList.Count == 1 ? -1 : 0;
+            SoundListComboBox.SelectedItem = Options.SoundName;
         }
         private void SaveOptions()
         {
@@ -159,7 +164,11 @@ namespace LeagueOfLegendsFocusHelper
         {
             if (SoundListComboBox.SelectedIndex >= 0 )
                 if ((string)SoundListComboBox.SelectedItem != "Refresh")
+                {
                     Options.SoundName = new string((string)SoundListComboBox.SelectedItem);
+                    
+                    
+                }
                 else
                     RefreshSoundList();
         }
@@ -179,6 +188,9 @@ namespace LeagueOfLegendsFocusHelper
             StatusLabel.Text = Options.IsActive ? "Active" : "Inactive";
             StatusResultLabel.Foreground = Options.IsActive ? new SolidColorBrush(Colors.Red) : new SolidColorBrush(Colors.Black);
             StatusResultLabel.Content = Options.IsActive ? "Active" : "Inactive";
+
+            //UpdateSoundListButton();
+            //UpdateVolumeButtons();
 
             SaveOptions();
         }
