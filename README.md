@@ -32,6 +32,11 @@ Plays a sound in an interval, everytime you hear the sound, you press tab and/or
 ## Important
 Clicking in the close button will not terminate the app, will just hide the window. Use the notify icon or "Terminate" button to terminate the app 
 
+# Requeriments
+- .NET 5.0 Runtime: https://dotnet.microsoft.com/download/dotnet/5.0
+- Direct download ( x32 ): https://dotnet.microsoft.com/download/dotnet/thank-you/runtime-5.0.12-windows-x86-installer
+- Direct download ( x64 ): https://dotnet.microsoft.com/download/dotnet/thank-you/runtime-5.0.12-windows-x64-installer
+
 ## Downloads/Instalation
 Just extract in any folder and execute the .exe, it will create a "Sounds" folder if does not exists.
 
