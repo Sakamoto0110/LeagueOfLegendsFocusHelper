@@ -35,8 +35,8 @@ Clicking in the close button will not terminate the app, will just hide the wind
 ## Downloads/Instalation
 Just extract in any folder and execute the .exe, it will create a "Sounds" folder if does not exists.
 
-- Windows 32 bits: https://drive.google.com/file/d/1IIzI8jFeXi1oPl0qJirH_JySqCRZ7Si_/view
-- Windows 64 bits: https://drive.google.com/file/d/1z83V0e45bP-fDBY7e_tClmGz_2DlRFoy/view
+- Windows 32 bits: https://drive.google.com/file/d/1lJHwLXwR_nvWBQ0TAPSqBKWA7IsyArPK/view
+- Windows 64 bits: https://drive.google.com/file/d/1KzAhTxl1oNu6NgmQR3CuV7_jjcAW-9uc/view
 - Windows 32/64 bits: https://drive.google.com/file/d/1wn7NHlXSJL8bjG9hP2ndC-Ut2QBsl6sY/view
 
 
