@@ -28,7 +28,11 @@ namespace LeagueOfLegendsFocusHelper
         [DllImport("user32.dll", EntryPoint = "FindWindow", SetLastError = true)]
         public static extern IntPtr FindWindowByCaption(IntPtr ZeroOnly, string lpWindowName);
 
-        //Settings.Default.PersistedTime, Settings.Default.PersistedState, Settings.Default.PersistedSound, Settings.Default.PersistedVolume        
+        private static MainWindow _Self;
+
+        private static readonly string GameWindowName = "League of Legends (TM) Client";
+        private static readonly string SoundsPath = "Sounds/";
+
         private OptionsList Options = new()
         {
             AutoPause = Settings.Default.PersistedAutoPause,
@@ -37,19 +41,13 @@ namespace LeagueOfLegendsFocusHelper
             Time = Settings.Default.PersistedTime,
             Volume = Settings.Default.PersistedVolume
         };
-        private Timer _Timer;
-
-        private NotifyIcon NIcon;
-
         private List<string> SoundList { get; set; } = new() { "Refresh" };
+        private Timer _Timer;
         private MediaPlayer MPlayer = new MediaPlayer();
-        private static readonly string GameWindowName = "League of Legends (TM) Client";
-        private static readonly string SoundsPath = "Sounds/";
-        private bool AllowClose = false;
-        private bool _IsVisible1 = true;
+        
+        private bool AllowClose;
+        private bool _IsVisible = true;
 
-        private ToolStripLabel StatusLabel;
-        private static MainWindow _Self;
         private Dictionary<string, Action<object, EventRouterArgs>> CommandMap = new()
         {
             { "NOP" , (s,e)=>{}},
@@ -116,31 +114,24 @@ namespace LeagueOfLegendsFocusHelper
         private void Timer_OnTick(object state)
         {
             var options = (OptionsList)state;
-            bool gameIsOpen = FindWindowByCaption(IntPtr.Zero, GameWindowName) != IntPtr.Zero;
-
-            if (options.SoundName != string.Empty)
-            {
-                if (Options.AutoPause)
-                {
-                    if(gameIsOpen)
-                        MPlayer.Dispatcher.InvokeAsync(() =>
-                        {
-                            MPlayer.Open(new Uri($"{SoundsPath}{options.SoundName}", UriKind.Relative));
-                            MPlayer.Volume = options.Volume / 100f;
-                            MPlayer.Play();
-                        });
-                }
-                else
-                {
-                    MPlayer.Dispatcher.InvokeAsync(() =>
-                    {
-                        MPlayer.Open(new Uri($"{SoundsPath}{options.SoundName}", UriKind.Relative));
-                        MPlayer.Volume = options.Volume / 100f;
-                        MPlayer.Play();
-                    });
-                }
-            }
             
+
+            if (options.SoundName == string.Empty)
+                return;
+            bool gameIsOpen = FindWindowByCaption(IntPtr.Zero, GameWindowName) != IntPtr.Zero;
+            Uri uri = new Uri($"{SoundsPath}{options.SoundName}", UriKind.Relative);
+            Action playAction = () =>
+            {
+                MPlayer.Open(uri);
+                MPlayer.Volume = options.Volume / 100f;
+                MPlayer.Play();
+            };
+
+            if (Options.AutoPause && !gameIsOpen)
+                return;
+           
+            MPlayer.Dispatcher.InvokeAsync(playAction);
+
         }
 
         
@@ -158,7 +149,10 @@ namespace LeagueOfLegendsFocusHelper
         {
             e.Cancel = !AllowClose;
             if (!AllowClose)
+            {
+                _IsVisible = false;
                 Hide();
+            }
         }
         private void SoundListComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -189,15 +183,12 @@ namespace LeagueOfLegendsFocusHelper
             StatusResultLabel.Foreground = Options.IsActive ? new SolidColorBrush(Colors.Red) : new SolidColorBrush(Colors.Black);
             StatusResultLabel.Content = Options.IsActive ? "Active" : "Inactive";
 
-            //UpdateSoundListButton();
-            //UpdateVolumeButtons();
-
             SaveOptions();
         }
         private void ToggleVisibility()
         {
-            _IsVisible1 = !_IsVisible1;
-            Visibility = _IsVisible1 ? Visibility.Visible : Visibility.Hidden;
+            _IsVisible = !_IsVisible;
+            Visibility = _IsVisible ? Visibility.Visible : Visibility.Hidden;
         }
         private void ToggleState()
         {
@@ -212,33 +203,7 @@ namespace LeagueOfLegendsFocusHelper
         
 
 
-        public class EventRouterArgs
-        {
-            private string _cmd;
-
-            [MemberNotNull]
-            public string cmd
-            {
-                get => _cmd ?? "NOP";
-                set => _cmd = value;
-
-            }
-            public object RARGS1;
-            public object RARGS2;
-            public object RARGS3;
-            public object RARGS4;
-
-            public EventRouterArgs(string str)
-            {
-                cmd = str;
-            }
-
-            public static implicit operator EventRouterArgs(string str)
-            {
-                return new EventRouterArgs(str);
-            }
-
-        }
+       
         private void MainWindowEventRouter(object sender, EventRouterArgs e)
         {
             CommandMap[e.cmd](sender,e);
@@ -252,6 +217,34 @@ namespace LeagueOfLegendsFocusHelper
         {
             Options.AutoPause = (bool)AutoPauseCheckbox.IsChecked;
         }
+    }
+
+    public class EventRouterArgs
+    {
+        private string _cmd;
+
+        [MemberNotNull]
+        public string cmd
+        {
+            get => _cmd ?? "NOP";
+            set => _cmd = value;
+
+        }
+        public object RARGS1;
+        public object RARGS2;
+        public object RARGS3;
+        public object RARGS4;
+
+        public EventRouterArgs(string str)
+        {
+            cmd = str;
+        }
+
+        public static implicit operator EventRouterArgs(string str)
+        {
+            return new EventRouterArgs(str);
+        }
+
     }
 }
 

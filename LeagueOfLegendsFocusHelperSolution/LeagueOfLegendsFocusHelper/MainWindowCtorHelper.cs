@@ -12,8 +12,10 @@ namespace LeagueOfLegendsFocusHelper
 {
     public partial class MainWindow : Window
     {
+        private NotifyIcon NIcon;
         private ToolStripMenuItem soundListButton;
         private ToolStripMenuItem volumeButton;
+        private ToolStripLabel StatusLabel;
         public NotifyIcon MakeNotifyIcon()
         {
             NotifyIcon nIcon;
